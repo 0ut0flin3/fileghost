@@ -42,7 +42,7 @@ $$$$$$<$F,$$$$$$$$$$ $$$$,`$$$$$$$'d$$$$$$$$$$$$$$$$$$$
 $$$$$$<$ $$$$$$$$$$$ $$$$$,`$$$$",$$$$3$$$$$$$$$$$$$$$$h
 $$$$$$'F<$$$$$$$$$$$ ?$$$$$c,"",d$$$$'$$$$$$$$$$$$$$$$$$
 ```
-this is a project created by a computer nerd, not an engineer, but he is really believes in privacy and thinks that everyone has the right to be able to use the internet without being monitored or controlled ,if they wish. That said, I always count on user feedback and support for any vulnerabilities so that we can make this "method" stronger . Pull requests are welcome. 
+this is a project created by a computer nerd, not an engineer, but he is really believes in privacy and thinks that everyone has the right to be able to use the internet without being monitored or controlled ,if they wish. That said, I always count on user feedback and support for any vulnerabilities so that we can make this "method" stronger . Pull requests are welcome.
 
 # INTRO:
 Fileghost allows to encrypt any file (or sequence of bytes, like a message) using an unique, random generated sequence of 256 bytes. Each of these keys is unique and unrepeatable and can have almost infinite combinations. You can create as many keys as you like but the file encrypted with a certain key can only be recovered using the same key used for encryption.
@@ -55,7 +55,7 @@ The same key can be reproduced in different formats:
 
 1) JSON format (or dictionary) and this is the main format that is needed to encrypt/decrypt files
 2) hexadecimal format
-3) as an integer 
+3) as an integer
 4) as a byte array.
 
 Python is the best way to use Fileghost
@@ -74,7 +74,7 @@ Generate keys:
 ---------------
 ```
 import fileghost.fileghost as fg
-key = fg.keygen()
+key = fg.keygen.generate()
 
 key.to_keystore() # {0: 215, 1: 125, 2: 114, 3: 75...}
 key.to_hex() # d77d724bc1f99a5fa63c3f0bb1808653b2b78d6...
@@ -83,12 +83,13 @@ key.to_byte_array() # [215, 125, 114, 75, 193, 249, 154...]
 ```
 
 -------------------------------------------------------------------------
-PS: You can use `savekeys()` function to save your key as a JSON file:
+PS: You can use `to_file()` function to save your key as a JSON file:
 -------------------------------------------------------------------------
 ```
 import fileghost.fileghost as fg
-key = fg.keygen()
-fg.savekeys(key.to_keystore(), "./mykeys.json")
+
+key = fg.keygen.generate()
+key.to_file("my_keys.json")
 ```
 ---------------
 Encrypt a file:
@@ -96,29 +97,32 @@ Encrypt a file:
 ```
 import fileghost.fileghost as fg
 
-key = fg.keygen().to_keystore()
-inputfile = open("cat.jpg","rb").read()
-encrypted_file = fg.encrypt(inputfile, key)
+key = fg.keygen.generate()
+key.to_file("my_keys.json")
+
 #if the input size exceeds 256 bytes will cause an error, if you want to disable it set 'disable_input_max_length=True'
 #wait for completion,it can take some time depending on file size and your hardware resources
 #then, if you want, you can write the encrypted file to disk
-encr_file=open("encrypted_cat.jpg","wb")
-encr_file.write(bytes(encrypted_file))
-encr_file.close()
+encrypted_file = key.encrypt_file("cat.jpg")
+
+with open("encrypted_cat.jpg","wb") as encr_file:
+    encr_file.write(bytes(encrypted_file))
 ```
 ---------------
 Decrypt a file :
 ---------------
 ```
 import fileghost.fileghost as fg
-encrypted_file=open("encrypted_cat.jpg","rb").read()
-key=key #must be the same used for encryption
-decrypted_file=fg.decrypt(encrypted_file, key)
+
+# NOTE: Using same key used for encryption
+key = fg.keygen.from_file("my_keys.json")
+decrypted_file = key.decrypt_file("encrypted_cat.jpg")
+
 #wait for completion,it can take some time depending on file size and your hardware resources
 #then, if you want, you can write the decrypted file to disk
-decr_file=open("cat.jpg","wb")
-decr_file.write(bytes(decrypted_file))
-decr_file.close()
+
+with open("cat.jpg","wb") as decr_file:
+    decr_file.write(bytes(decrypted_file))
 
 ```
 ---------------
@@ -127,9 +131,9 @@ Encrypt a message:
 ```
 import fileghost.fileghost as fg
 
-key = fg.keygen().to_keystore()
+key = fg.keygen.generate()
 message = b'hello'
-encrypted_message = fg.encrypt(message, key)
+encrypted_message = key.encrypt(message)
 #if the message size exceeds 256 bytes will cause an error, if you want to disable it set 'disable_input_max_length=True'
 ```
 
@@ -138,8 +142,9 @@ Decrypt a message :
 ---------------
 ```
 import fileghost.fileghost as fg
-key=key #must be the same used for encryption
-decrypted_message=fg.decrypt(encrypted_message, key)
+
+key = ... # must be the same used for encryption
+decrypted_message = key.decrypt(encrypted_message)
 
 ```
 

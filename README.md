@@ -1,7 +1,7 @@
 # Fileghost by 0ut0flin3
 Open-source File Encryption
 
-**UPDATE: You can now generate a key directly in your browser here: https://fileghost.github.io/ ( pull requests and suggestions on how to improve this and on a possible Fileghost frontend implementation are welcome )**
+**UPDATE: You can now generate a key directly in your browser here: https://0ut0flin3.github.io/fileghost/generate_keys/ ( pull requests and suggestions on how to improve this and on a possible Fileghost frontend implementation are welcome )**
 
 
 ```
